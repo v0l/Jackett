@@ -5,7 +5,9 @@ RUN cd src/Jackett.Server && dotnet publish -c Release -f net9.0 --self-containe
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS runtime
 WORKDIR /app
-RUN addgroup -S jackett && adduser -S -G jackett -h /app jackett
+RUN apk add --no-cache icu-libs
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+RUN addgroup -S -g 1000 jackett && adduser -S -G jackett -u 1000 -h /app jackett
 COPY --from=build /app/publish .
 RUN chown -R jackett:jackett /app
 USER jackett
